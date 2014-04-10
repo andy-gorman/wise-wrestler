@@ -1,11 +1,23 @@
+//All The Node-js libs required
 var Twit = require('twit');
 
+var request = require('request')
+	, fs = require('fs')
+	, gm = require('./gm');
 
-var T = new Twit(require('./config.js'));
-var request = require('request');
 var wrestlers = require('./wrestlers.json');
 
+//Constants...probably will make some time_const file that 
+//I use in most of my projects like this.
 var DAY_IN_MILLISECONDS = 1000 * 60 * 60 * 24;
+
+var GOOGLE_API_REQUEST = "https://www.googleapis.com/customsearch/v1?";
+var GOOGLE_API_KEY = "";
+
+
+//Reads my congif
+var T = new Twit(require('./config.js'));
+
 
 //This takes an image, and tries to tweet it.
 function sendTweet(imageFile) {
@@ -25,6 +37,7 @@ function sendTweet(imageFile) {
 function tweetRandomWrestler() {
 	//choose a random wrestler from the array.
 	var wrestler = wrestlers.wrestlers[Math.floor(Math.random() * wrestlers.wrestlers.length)];
+
 	
 }
 
