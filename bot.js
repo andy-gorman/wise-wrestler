@@ -3,19 +3,21 @@ var Twit = require('twit');
 
 var request = require('request')
 	, fs = require('fs')
-	, gm = require('./gm');
+	, gm = require('gm');
 
+var bing_key = require('./config.js').bing_key;
 var wrestlers = require('./wrestlers.json');
+
+var bing = require('./bing.js');
 
 //Constants...probably will make some time_const file that 
 //I use in most of my projects like this.
 var DAY_IN_MILLISECONDS = 1000 * 60 * 60 * 24;
 
-var GOOGLE_API_REQUEST = "https://www.googleapis.com/customsearch/v1?";
-var GOOGLE_API_KEY = "";
-
-
-//Reads my congif
+/* Reads my config file.
+   This config file has my twitter api access details.
+   If you want to run this yourself, you have to create your own config.js file
+*/
 var T = new Twit(require('./config.js'));
 
 
@@ -37,6 +39,7 @@ function sendTweet(imageFile) {
 function tweetRandomWrestler() {
 	//choose a random wrestler from the array.
 	var wrestler = wrestlers.wrestlers[Math.floor(Math.random() * wrestlers.wrestlers.length)];
+	bing.search(wrestler, "Images");
 
 	
 }
@@ -45,4 +48,4 @@ function tweetRandomWrestler() {
 tweetRandomWrestler();
 
 //...and every day after that.
-setInterval(tweetRandomWrestler, 1000 * 60 * 60 * 24);
+//setInterval(tweetRandomWrestler, 1000 * 60 * 60 * 24);
