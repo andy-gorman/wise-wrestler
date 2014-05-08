@@ -39,8 +39,12 @@ function sendTweet(imageFile) {
 function tweetRandomWrestler() {
 	//choose a random wrestler from the array.
 	var wrestler = wrestlers.wrestlers[Math.floor(Math.random() * wrestlers.wrestlers.length)];
-	bing.search(wrestler, "Images");
-
+	bing.search(wrestler, "Image", function(result) {
+		var mime_map = require('./mimeTypesToFileExt.json');
+		var file_ext = mime_map.mimeTypesToFileExt[result.ContentType];
+		var file_name = wrestler + "." + file_ext;
+		request(result.MediaUrl).pipe(fs.createWriteStream(file_name));
+	});
 	
 }
 

@@ -1,0 +1,9 @@
+{
+	"description" : "A mapping from mime types to their corresponding file extension.",
+	"mimeTypesToFileExt": {
+		"image/jpeg" : "jpg",
+		"image/bmp" : "bmp",
+		"image/gif" : "gif",
+		"image/png" : "png"
+	}
+}
