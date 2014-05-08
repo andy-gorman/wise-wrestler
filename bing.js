@@ -25,7 +25,7 @@ module.exports = {
 		console.log("Sending request for: " + request_uri);
 		request(request_uri, function(error, response, body) {
 			if(!error && response.statusCode == 200) {
-				console.log("Success");
+				console.log("Got bing results");
 
 				var results = JSON.parse(response.body);
 				//WHY DOES THIS WORK HERE AND NOT BELOW!!?!!?!
