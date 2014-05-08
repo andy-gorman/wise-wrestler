@@ -46,7 +46,7 @@ function tweetRandomWrestler() {
 
 		var mime_map = require('./mimeTypesToFileExt.json');
 		var file_ext = mime_map.mimeTypesToFileExt[result.ContentType];
-		var file_name = wrestler + "." + file_ext;
+		var file_name = "./img/" + wrestler + "." + file_ext;
 
 		var dl = request(result.MediaUrl).pipe(fs.createWriteStream(file_name));
 

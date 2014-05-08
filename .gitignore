@@ -1,7 +1,5 @@
 node_modules/
+img/
 config.js
 *.log
-*.png
-*.jpg
-*.gif
 *.ttf
