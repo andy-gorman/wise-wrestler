@@ -33,6 +33,7 @@ function sendTweet(image_file) {
 			},
 
 		}, function(err, response, body) {
+			fs.unlink(image_file);
 			return console.log(err, body);
 		});
 		var form = r.form();
