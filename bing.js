@@ -12,15 +12,15 @@ var request = require('request').defaults({
 });
 
 //There is probably a better naming scheme than this, but i don't know it.
-var root_uri = 'https://api.datamarket.azure.com/Bing/Search';
+var root_uri = 'http://api.datamarket.azure.com/Bing/Search';
 
 module.exports = {
-	search: function(query, service_op, callback) {
+	search: function(query, service_op, num_results, callback) {
 		result_fmt = "json"; //DGAF about XML
 		query = encodeURIComponent( "'" + query + "'").replace(/'/g, "%27");
 
 		request_uri = root_uri + "/" + service_op + "?Query=" + query +
-						"&$top=10&$format=" + result_fmt;
+						"&$top=" + num_results + "&$format=" + result_fmt;
 
 		console.log("Sending request for: " + request_uri);
 		request(request_uri, function(error, response, body) {
@@ -28,23 +28,28 @@ module.exports = {
 				console.log("Got bing results");
 
 				var results = JSON.parse(response.body);
-				//WHY DOES THIS WORK HERE AND NOT BELOW!!?!!?!
-				results = results.d.results[0];
+				results = results.d.results;
 				callback(results);
 			} else {
-				console.log("Here!!!!");
 				console.log("Error code: " + response.statusCode);
 				console.log("Error is: " + error);
 				console.log("Body of Error: " + body);
 			}
 		});
 	},
+
+	get_random_result: function(query, service_op, num_results, callback) {
+		results = this.search(query, service_op, num_results, function(results) {
+			var index = Math.floor(Math.random() * (results.length + 1));
+			callback(results[index]);
+		});
+	},
 	
 	//From a given query and service operation, gives the user the first result
 	//of their search.
 	get_first_result: function(query, service_op, callback) {
-		results = this.search(query, service_op, function(results) {
-			callback(results);
+		results = this.search(query, service_op, 1, function(results) {
+			callback(results[0]);
 		});
 	}
 };

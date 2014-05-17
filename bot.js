@@ -3,12 +3,14 @@ var Twit = require('twit');
 
 var request = require('request')
 	, fs = require('fs')
-	, gm = require('gm');
+	, gm = require('gm')
+	, easyimage = require('easyimage');
 
 var bing_key = require('./config.js').bing_key;
 var wrestlers = require('./wrestlers.json');
 
 var bing = require('./bing.js');
+var quotes = require('./quotes.js');
 
 //Constants specific to this operation.
 var max_dim = 1000; //TODO: Find a good size that looks good.
@@ -42,11 +44,13 @@ function sendTweet(imageFile) {
 function tweetRandomWrestler() {
 	//choose a random wrestler from the array.
 	var wrestler = wrestlers.wrestlers[Math.floor(Math.random() * wrestlers.wrestlers.length)];
-	bing.search(wrestler, "Image", function(result) {
+	var query = wrestler + " wrestler"; //Increases chance we won't get 
+										//an image I don't want.
+	bing.get_random_result(query, "Image", 100, function(result) {
 
 		var mime_map = require('./mimeTypesToFileExt.json');
 		var file_ext = mime_map.mimeTypesToFileExt[result.ContentType];
-		var file_name = "./img/" + wrestler + "." + file_ext;
+		var file_name = ("./img/" + wrestler + "." + file_ext).replace(/ /g, '_');
 
 		var dl = request(result.MediaUrl).pipe(fs.createWriteStream(file_name));
 
@@ -57,34 +61,29 @@ function tweetRandomWrestler() {
 			gm(file_name).size(function(err, size) {
 				if(!err) {
 					
-					//Make sure the picture conforms to the arbitrary 
-					//Standard I've set.
-					var largest_dim = Math.max(size.width, size.height);
-					if(largest_dim > max_dim) {
-						gm(file_name).minify(largest_dim / max_dim)
-						.write(file_name, function(err) {
-							if(err) {
-								console.log("Couldn't minify the image");
-							}
-						});
-					}
+					var file_name_esc = file_name.replace(/'/g, "\\'");
+					quotes.get_random_quote("inspire", function(quote) {
+						var full_quote = quote + "\n-" + wrestler;
+						//First part of the command to create the caption.
+						var textImg = "convert -background '#0008' -fill white \\\n" +
+								"-font Helvetica -pointsize 36 -size "+ size.width + "x \\\n" +
+								"caption:'" + full_quote + "' \\\n";
+						var cmd = textImg + file_name +
+							" +swap -gravity south -composite " + file_name;
+						console.log("Execing cmd: " + cmd);
 
-					//Write in given font a random inspirational quote
-					//on the image.
-					gm(file_name)
-					.font("Arial Black.ttf")
-					.fontSize(32)
-					.drawText(30, 200, "The only person you are destined to become is the person you decide to be.")
-					.write(file_name, function(err) {
-						if(!err) {
-							console.log("Successfully performed operation to image");
-						} else {
-							console.log("Something went wrong while manipulating the image");
-						}
+						easyimage.exec(cmd, function(err, stdout, stderr) {
+							if (err) throw err;
+							console.log("executed command");
+							sendTweet(file_name);
+						});
+
 					});
+
 				} else {
 					console.log("There Was an error getting the image dimensions");
 				}
+
 			});
 		});
 	});
