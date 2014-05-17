@@ -96,4 +96,4 @@ function tweetRandomWrestler() {
 tweetRandomWrestler();
 
 //...and every day after that.
-//setInterval(tweetRandomWrestler, 1000 * 60 * 60 * 24);
+setInterval(tweetRandomWrestler, 1000 * 60 * 60 * 24);
