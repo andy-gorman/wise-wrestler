@@ -1,42 +1,43 @@
 //All The Node-js libs required
-var Twit = require('twit');
-
 var request = require('request')
 	, fs = require('fs')
 	, gm = require('gm')
 	, easyimage = require('easyimage');
 
-var bing_key = require('./config.js').bing_key;
+//API keys
+var keys = require('./config.js');
+
+//Data files
 var wrestlers = require('./wrestlers.json');
 
+//My files for using different apis.
 var bing = require('./bing.js');
 var quotes = require('./quotes.js');
-
-//Constants specific to this operation.
-var max_dim = 1000; //TODO: Find a good size that looks good.
 
 //Constants...probably will make some time_const file that 
 //I use in most of my projects like this.
 var DAY_IN_MILLISECONDS = 1000 * 60 * 60 * 24;
 
-/* Reads my config file.
-   This config file has my twitter api access details.
-   If you want to run this yourself, you have to create your own config.js file
-*/
-var T = new Twit(require('./config.js'));
-
 
 //This takes an image, and tries to tweet it.
-function sendTweet(imageFile) {
-	//TODO: the way media is might not work. Check to see if it does.
-	T.post('statuses/update_with_media', {status: '', media: [imageFile]}, function(error, response) {
-			if(response) {
-				console.log("Your bot tweeted a new thing");
-			}
+function sendTweet(image_file) {
+	fs.readFile(image_file, function(err, image_data) {
+		var base64_img = new Buffer(image_data, 'base64');
+		var r = request.post({
+			url: "https://api.twitter.com/1.1/statuses/update_with_media.json",
+			oauth: {
+				consumer_key: keys.consumer_key,
+				consumer_secret: keys.consumer_secret,
+				token: keys.access_token,
+				token_secret: keys.access_token_secret
+			},
 
-			if(error) {
-				console.log("Your bot had an error:", error);
-			}
+		}, function(err, response, body) {
+			return console.log(err, body);
+		});
+		var form = r.form();
+		form.append('status', '');
+		form.append('media[]', base64_img);
 	});
 }
 
@@ -63,11 +64,12 @@ function tweetRandomWrestler() {
 					
 					var file_name_esc = file_name.replace(/'/g, "\\'");
 					quotes.get_random_quote("inspire", function(quote) {
+						//var full_quote = "This is a placeholder quote";
 						var full_quote = quote + "\n-" + wrestler;
 						//First part of the command to create the caption.
 						var textImg = "convert -background '#0008' -fill white \\\n" +
 								"-font Helvetica -pointsize 36 -size "+ size.width + "x \\\n" +
-								"caption:'" + full_quote + "' \\\n";
+								"caption:\"" + full_quote + "\" \\\n";
 						var cmd = textImg + file_name +
 							" +swap -gravity south -composite " + file_name;
 						console.log("Execing cmd: " + cmd);
