@@ -1,0 +1,31 @@
+{
+  "name": "wise-wrestlers",
+  "version": "0.0.0",
+  "description": "Twitter bot",
+  "main": "bot.js",
+  "dependencies": {
+    "easyimage": "~0.1.6",
+    "gm": "~1.14.2",
+    "node-twitter": "~0.5.0",
+    "request": "~2.34.0",
+    "twit": "~1.1.13"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gormanator/wise-wrestler.git"
+  },
+  "keywords": [
+    "twitterbot",
+    "bot"
+  ],
+  "author": "Andrew-Gorman",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gormanator/wise-wrestler/issues"
+  },
+  "homepage": "https://github.com/gormanator/wise-wrestler"
+}

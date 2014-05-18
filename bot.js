@@ -18,6 +18,8 @@ var quotes = require('./quotes.js');
 //I use in most of my projects like this.
 var DAY_IN_MILLISECONDS = 1000 * 60 * 60 * 24;
 
+var imageMagick = gm.subClass({imageMagick: true});
+
 
 //This takes an image, and tries to tweet it.
 function sendTweet(image_file) {
@@ -52,15 +54,14 @@ function tweetRandomWrestler() {
 
 		var mime_map = require('./mimeTypesToFileExt.json');
 		var file_ext = mime_map.mimeTypesToFileExt[result.ContentType];
-		var file_name = ("./img/" + wrestler + "." + file_ext).replace(/ /g, '_');
+		var file_name = ("./" + wrestler + "." + file_ext).replace(/ /g, '_');
 
 		var dl = request(result.MediaUrl).pipe(fs.createWriteStream(file_name));
 
 		//Wait for the download to finish piping to a file, then manipulate
 		//the image.
 		dl.on('finish', function () {
-			var img_dim = {};
-			gm(file_name).size(function(err, size) {
+			imageMagick(file_name).size(function(err, size) {
 				if(!err) {
 					
 					var file_name_esc = file_name.replace(/'/g, "\\'");
@@ -84,7 +85,7 @@ function tweetRandomWrestler() {
 					});
 
 				} else {
-					console.log("There Was an error getting the image dimensions");
+					console.log("There Was an error getting the image dimensions", err);
 				}
 
 			});
