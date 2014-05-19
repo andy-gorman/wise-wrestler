@@ -77,7 +77,9 @@ function tweetRandomWrestler() {
 						console.log("Execing cmd: " + cmd);
 
 						easyimage.exec(cmd, function(err, stdout, stderr) {
-							if (err) throw err;
+							if (err) {
+								return console.log("Error manipulating image: ", err);
+							}
 							console.log("executed command");
 							sendTweet(file_name);
 						});
@@ -85,7 +87,7 @@ function tweetRandomWrestler() {
 					});
 
 				} else {
-					console.log("There Was an error getting the image dimensions", err);
+					return console.log("There Was an error getting the image dimensions", err);
 				}
 
 			});
@@ -98,4 +100,4 @@ function tweetRandomWrestler() {
 tweetRandomWrestler();
 
 //...and every day after that.
-setInterval(tweetRandomWrestler, 1000 * 60 * 60 * 24);
+setInterval(tweetRandomWrestler, DAY_IN_MILLISECONDS);
